@@ -22,7 +22,6 @@ namespace P322310540TM
         string simbolosTemporal = "";
         string resultadoTemporal = "";
         string expresionPrefija = "";
-        int indice = 0;
 
         Dictionary<string, int> prioridad = new Dictionary<string, int>()
         {
@@ -51,6 +50,7 @@ namespace P322310540TM
                 PilaExpresionPrefija = new PilaDinamica<string>();
                 PilaSimbolos = new PilaDinamica<string>();
                 pila = new PilaDinamica<char>();
+                label2.Text = "Expresión prefija: ";
                 ConvertirDeInfijaAPrefija();
                 button2.Enabled = true;
             }
@@ -145,9 +145,10 @@ namespace P322310540TM
                 temp3 = temp3.Siguiente;
             }
 
-            label2.Text = "Expresión prefija: ";
-
             temp3 = PilaExpresionPrefija.tope;
+
+            expresionPrefija = "";
+
             while (temp3 != null)
             {
                 expresionPrefija += temp3.Dato;
@@ -217,15 +218,22 @@ namespace P322310540TM
         private void button2_Click(object sender, EventArgs e)
         {
             AsignarValores();
-            label3.Text = $"Expresión evaluada: {CalcularExpresionPrefija()}";
+            if(valoresParaLasVariables.Count == variables.Count)
+                label3.Text = $"Expresión evaluada: {CalcularExpresionPrefija()}";
         }
 
         public void AsignarValores()
         {
+            valoresParaLasVariables.Clear();
+            dataGridView3.Rows.Clear();
             foreach (var letra in variables)
             {
-                valoresParaLasVariables.Add(Convert.ToDouble(Microsoft.VisualBasic.Interaction
-                    .InputBox("Valor para la variable " + letra.ToString(), "Peticion de valor", "")));
+                var valor = Microsoft.VisualBasic.Interaction
+                    .InputBox("Valor para la variable " + letra.ToString(), "Peticion de valor", "");
+                
+                if(valor.Length > 0)
+                    if(Char.IsNumber(Convert.ToChar(valor)))
+                        valoresParaLasVariables.Add(Convert.ToDouble(valor));
             }
         }
     }

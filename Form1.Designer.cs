@@ -29,16 +29,16 @@
         private void InitializeComponent()
         {
             dataGridView1 = new DataGridView();
+            Column1 = new DataGridViewTextBoxColumn();
             dataGridView2 = new DataGridView();
+            Column2 = new DataGridViewTextBoxColumn();
             dataGridView3 = new DataGridView();
+            Column3 = new DataGridViewTextBoxColumn();
             textBox1 = new TextBox();
             button1 = new Button();
             button2 = new Button();
             label2 = new Label();
             label3 = new Label();
-            Column1 = new DataGridViewTextBoxColumn();
-            Column2 = new DataGridViewTextBoxColumn();
-            Column3 = new DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dataGridView2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dataGridView3).BeginInit();
@@ -55,6 +55,11 @@
             dataGridView1.Size = new Size(267, 359);
             dataGridView1.TabIndex = 0;
             // 
+            // Column1
+            // 
+            Column1.HeaderText = "Pila";
+            Column1.Name = "Column1";
+            // 
             // dataGridView2
             // 
             dataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
@@ -64,6 +69,11 @@
             dataGridView2.Name = "dataGridView2";
             dataGridView2.Size = new Size(267, 359);
             dataGridView2.TabIndex = 1;
+            // 
+            // Column2
+            // 
+            Column2.HeaderText = "Resultado";
+            Column2.Name = "Column2";
             // 
             // dataGridView3
             // 
@@ -75,11 +85,17 @@
             dataGridView3.Size = new Size(267, 359);
             dataGridView3.TabIndex = 2;
             // 
+            // Column3
+            // 
+            Column3.HeaderText = "Evaluacion";
+            Column3.Name = "Column3";
+            // 
             // textBox1
             // 
             textBox1.Location = new Point(12, 12);
+            textBox1.Multiline = true;
             textBox1.Name = "textBox1";
-            textBox1.Size = new Size(267, 33);
+            textBox1.Size = new Size(267, 60);
             textBox1.TabIndex = 3;
             // 
             // button1
@@ -119,21 +135,6 @@
             label3.Size = new Size(184, 25);
             label3.TabIndex = 7;
             label3.Text = "Expresión evaluada: ";
-            // 
-            // Column1
-            // 
-            Column1.HeaderText = "Pila";
-            Column1.Name = "Column1";
-            // 
-            // Column2
-            // 
-            Column2.HeaderText = "Resultado";
-            Column2.Name = "Column2";
-            // 
-            // Column3
-            // 
-            Column3.HeaderText = "Evaluacion";
-            Column3.Name = "Column3";
             // 
             // Form1
             // 
