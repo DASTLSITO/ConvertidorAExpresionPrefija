@@ -12,10 +12,10 @@ namespace P322310540TM
     public partial class Form1 : Form
     {
         string sb = "";
-        PilaEstatica<string> PilaExpresionInfija;
-        PilaEstatica<string> PilaExpresionPrefija;
-        PilaEstatica<string> PilaSimbolos;
-        PilaEstatica<char> pila;
+        PilaDinamica<string> PilaExpresionInfija;
+        PilaDinamica<string> PilaExpresionPrefija;
+        PilaDinamica<string> PilaSimbolos;
+        PilaDinamica<char> pila;
         List<char> variables = new List<char>();
         List<double> valoresParaLasVariables = new List<double>();
         string expresionPrefijaTemporal = "";
@@ -48,9 +48,9 @@ namespace P322310540TM
                 variables.Clear();
                 valoresParaLasVariables.Clear();
                 obtenerPilaExpresionInfija();
-                PilaExpresionPrefija = new PilaEstatica<string>(PilaExpresionInfija.max);
-                PilaSimbolos = new PilaEstatica<string>(PilaExpresionInfija.max);
-                pila = new PilaEstatica<char>(PilaExpresionInfija.max);
+                PilaExpresionPrefija = new PilaDinamica<string>();
+                PilaSimbolos = new PilaDinamica<string>();
+                pila = new PilaDinamica<char>();
                 ConvertirDeInfijaAPrefija();
                 button2.Enabled = true;
             }
@@ -60,7 +60,7 @@ namespace P322310540TM
         {
 
             sb = Regex.Replace(textBox1.Text, @"\s", "");
-            PilaExpresionInfija = new PilaEstatica<string>(sb.Length);
+            PilaExpresionInfija = new PilaDinamica<string>();
             for (int i = 0; i < sb.Length; i++)
             {
                 PilaExpresionInfija.Push(sb[i].ToString());
@@ -71,43 +71,38 @@ namespace P322310540TM
         {
             do
             {
-                if (PilaExpresionInfija.elementos[PilaExpresionInfija.tope].Equals(")"))
+                if (PilaExpresionInfija.Peek().Dato.Equals(")"))
                 {
-                    PilaSimbolos.Push(PilaExpresionInfija.Pop());
+                    PilaSimbolos.Push(PilaExpresionInfija.Pop().Dato);
                 }
-                else if (Regex.IsMatch(PilaExpresionInfija.elementos[PilaExpresionInfija.tope].ToString(), "^[a-zA-Z]*$"))
+                else if (Regex.IsMatch(PilaExpresionInfija.Peek().Dato.ToString(), "^[a-zA-Z]*$"))
                 {
-                    if (!variables.Contains(Convert.ToChar(PilaExpresionInfija.elementos[PilaExpresionInfija.tope])))
-                        variables.Add(Convert.ToChar(PilaExpresionInfija.elementos[PilaExpresionInfija.tope]));
+                    if (!variables.Contains(Convert.ToChar(PilaExpresionInfija.Peek().Dato)))
+                        variables.Add(Convert.ToChar(PilaExpresionInfija.Peek().Dato));
 
-                    PilaExpresionPrefija.Push(PilaExpresionInfija.Pop());
+                    PilaExpresionPrefija.Push(PilaExpresionInfija.Pop().Dato);
                 }
-                else if (PilaExpresionInfija.elementos[PilaExpresionInfija.tope].Equals("+")
-                        || PilaExpresionInfija.elementos[PilaExpresionInfija.tope].Equals("-")
-                        || PilaExpresionInfija.elementos[PilaExpresionInfija.tope].Equals("*")
-                        || PilaExpresionInfija.elementos[PilaExpresionInfija.tope].Equals("/")
-                        || PilaExpresionInfija.elementos[PilaExpresionInfija.tope].Equals("^"))
+                else if (PilaExpresionInfija.Peek().Dato.Equals("+")
+                        || PilaExpresionInfija.Peek().Dato.Equals("-")
+                        || PilaExpresionInfija.Peek().Dato.Equals("*")
+                        || PilaExpresionInfija.Peek().Dato.Equals("/")
+                        || PilaExpresionInfija.Peek().Dato.Equals("^"))
                 {
-                    if (PilaSimbolos.EstaVacia())
-                        PilaSimbolos.Push(PilaExpresionInfija.Pop());
-                    else if (PilaSimbolos.elementos[PilaSimbolos.tope].Equals(")"))
-                        PilaSimbolos.Push(PilaExpresionInfija.Pop());
-                    else if (prioridad[PilaExpresionInfija.Peek()] >= prioridad[PilaSimbolos.elementos[PilaSimbolos.tope]])
-                        PilaSimbolos.Push(PilaExpresionInfija.Pop());
-                    else if (prioridad[PilaExpresionInfija.Peek()] < prioridad[PilaSimbolos.elementos[PilaSimbolos.tope]])
+                    if (PilaSimbolos.EstaVacia() || PilaSimbolos.Peek().Dato.Equals(")") || prioridad[PilaExpresionInfija.Peek().Dato] >= prioridad[PilaSimbolos.Peek().Dato])
+                        PilaSimbolos.Push(PilaExpresionInfija.Pop().Dato);
+                    else if (prioridad[PilaExpresionInfija.Peek().Dato] < prioridad[PilaSimbolos.Peek().Dato])
                     {
-                        PilaExpresionPrefija.Push(PilaSimbolos.Pop());
-                        PilaSimbolos.Push(PilaExpresionInfija.Pop());
+                        PilaExpresionPrefija.Push(PilaSimbolos.Pop().Dato);
+                        PilaSimbolos.Push(PilaExpresionInfija.Pop().Dato);
                     }
                 }
-                else if (PilaExpresionInfija.elementos[PilaExpresionInfija.tope].Equals("("))
+                else if (PilaExpresionInfija.Peek().Dato.Equals("("))
                 {
-                    indice = PilaSimbolos.tope;
-
-                    while (!PilaSimbolos.elementos[indice].Equals(")"))
+                    Nodo<string> temp = PilaSimbolos.tope;
+                    while (temp.Dato.Equals(")") && temp != null)
                     {
-                        PilaExpresionPrefija.Push(PilaSimbolos.Pop());
-                        indice--;
+                        PilaExpresionPrefija.Push(temp.Dato);
+                        temp = temp.Siguiente;
                     }
 
                     PilaSimbolos.Pop();
@@ -122,43 +117,48 @@ namespace P322310540TM
 
                 simbolosTemporal = "";
                 expresionPrefijaTemporal = "";
-                for (int i = PilaSimbolos.tope; i >= 0; i--)
+
+                Nodo<string> temp2 = PilaSimbolos.tope;
+
+                while (temp2 != null)
                 {
-                    simbolosTemporal += PilaSimbolos.elementos[i];
+                    simbolosTemporal += temp2.Dato;
+                    temp2 = temp2.Siguiente;
                 }
 
-                for (int i = PilaExpresionPrefija.tope; i >= 0; i--)
+                temp2 = PilaExpresionPrefija.tope;
+
+                while (temp2 != null)
                 {
-                    expresionPrefijaTemporal += PilaExpresionPrefija.elementos[i];
+                    expresionPrefijaTemporal += temp2.Dato;
+                    temp2 = temp2.Siguiente;
                 }
                 dataGridView1.Rows.Add(simbolosTemporal);
                 dataGridView2.Rows.Add(expresionPrefijaTemporal);
             } while (!PilaExpresionInfija.EstaVacia());
 
-            for (int i = PilaSimbolos.tope; i >= 0; i--)
+            Nodo<string> temp3 = PilaSimbolos.tope;
+
+            while (temp3 != null)
             {
-                PilaExpresionPrefija.Push(PilaSimbolos.Pop());
+                PilaExpresionPrefija.Push(temp3.Dato);
+                temp3 = temp3.Siguiente;
             }
 
             label2.Text = "Expresión prefija: ";
-            indice = PilaExpresionPrefija.tope;
 
-            while (indice >= 0)
+            temp3 = PilaExpresionPrefija.tope;
+            while (temp3 != null)
             {
-                label2.Text += PilaExpresionPrefija.elementos[indice].ToString();
-                indice--;
+                expresionPrefija += temp3.Dato;
+                temp3 = temp3.Siguiente;
             }
-
-            expresionPrefija = "";
-            for (int i = PilaExpresionPrefija.tope; i >= 0; i--)
-            {
-                expresionPrefija += PilaExpresionPrefija.elementos[i].ToString();
-            }
+            label2.Text += expresionPrefija;
         }
 
         public double CalcularExpresionPrefija()
         {
-            Stack<double> pila = new Stack<double>();
+            PilaDinamica<double> pila = new PilaDinamica<double>();
 
             for (int i = expresionPrefija.Length - 1; i >= 0; i--)
             {
@@ -175,8 +175,8 @@ namespace P322310540TM
                 }
                 else if (esOperador(caracter))
                 {
-                    double operando1 = pila.Pop();
-                    double operando2 = pila.Pop();
+                    double operando1 = pila.Pop().Dato;
+                    double operando2 = pila.Pop().Dato;
 
                     switch (caracter)
                     {
@@ -207,7 +207,7 @@ namespace P322310540TM
                 }
             }
 
-            return pila.Pop();
+            return pila.Pop().Dato;
         }
         public bool esOperador(char c)
         {
