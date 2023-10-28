@@ -31,7 +31,6 @@ namespace P322310540TM
             }
             else
             {
-                Console.WriteLine("La pila está vacía.");
                 return default;
             }
         }
@@ -49,7 +48,6 @@ namespace P322310540TM
             }
             else
             {
-                Console.WriteLine("La pila está vacía.");
                 return default;
             }
         }

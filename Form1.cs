@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using Microsoft.VisualBasic;
 
 
 namespace P322310540TM
@@ -22,6 +23,8 @@ namespace P322310540TM
         string simbolosTemporal = "";
         string resultadoTemporal = "";
         string expresionPrefija = "";
+        int cantidadVariables = 0;
+        int cantidadOperadores = 0;
 
         Dictionary<string, int> prioridad = new Dictionary<string, int>()
         {
@@ -41,6 +44,8 @@ namespace P322310540TM
         {
             if (textBox1.Text.Length > 0)
             {
+                cantidadOperadores = 0;
+                cantidadVariables = 0;
                 dataGridView1.Rows.Clear();
                 dataGridView2.Rows.Clear();
                 dataGridView3.Rows.Clear();
@@ -51,6 +56,7 @@ namespace P322310540TM
                 PilaSimbolos = new PilaDinamica<string>();
                 pila = new PilaDinamica<char>();
                 label2.Text = "Expresión prefija: ";
+                label3.Text = "Expresión evaluada: ";
                 ConvertirDeInfijaAPrefija();
                 button2.Enabled = true;
             }
@@ -69,146 +75,182 @@ namespace P322310540TM
 
         public void ConvertirDeInfijaAPrefija()
         {
-            do
+            try
             {
-                if (PilaExpresionInfija.Peek().Dato.Equals(")"))
+                do
                 {
-                    PilaSimbolos.Push(PilaExpresionInfija.Pop().Dato);
-                }
-                else if (Regex.IsMatch(PilaExpresionInfija.Peek().Dato.ToString(), "^[a-zA-Z]*$"))
-                {
-                    if (!variables.Contains(Convert.ToChar(PilaExpresionInfija.Peek().Dato)))
-                        variables.Add(Convert.ToChar(PilaExpresionInfija.Peek().Dato));
-
-                    PilaExpresionPrefija.Push(PilaExpresionInfija.Pop().Dato);
-                }
-                else if (PilaExpresionInfija.Peek().Dato.Equals("+")
-                        || PilaExpresionInfija.Peek().Dato.Equals("-")
-                        || PilaExpresionInfija.Peek().Dato.Equals("*")
-                        || PilaExpresionInfija.Peek().Dato.Equals("/")
-                        || PilaExpresionInfija.Peek().Dato.Equals("^"))
-                {
-                    if (PilaSimbolos.EstaVacia() || PilaSimbolos.Peek().Dato.Equals(")") || prioridad[PilaExpresionInfija.Peek().Dato] >= prioridad[PilaSimbolos.Peek().Dato])
-                        PilaSimbolos.Push(PilaExpresionInfija.Pop().Dato);
-                    else if (prioridad[PilaExpresionInfija.Peek().Dato] < prioridad[PilaSimbolos.Peek().Dato])
+                    if (PilaExpresionInfija.Peek().Dato.Equals(")"))
                     {
-                        PilaExpresionPrefija.Push(PilaSimbolos.Pop().Dato);
                         PilaSimbolos.Push(PilaExpresionInfija.Pop().Dato);
                     }
-                }
-                else if (PilaExpresionInfija.Peek().Dato.Equals("("))
-                {
-                    Nodo<string> temp = PilaSimbolos.tope;
-                    while (temp.Dato.Equals(")") && temp != null)
+                    else if (Regex.IsMatch(PilaExpresionInfija.Peek().Dato.ToString(), "^[a-zA-Z]*$"))
                     {
-                        PilaExpresionPrefija.Push(temp.Dato);
-                        temp = temp.Siguiente;
+                        if (!variables.Contains(Convert.ToChar(PilaExpresionInfija.Peek().Dato)))
+                            variables.Add(Convert.ToChar(PilaExpresionInfija.Peek().Dato));
+
+                        PilaExpresionPrefija.Push(PilaExpresionInfija.Pop().Dato);
+                        cantidadVariables++;
+                    }
+                    else if (PilaExpresionInfija.Peek().Dato.Equals("+")
+                            || PilaExpresionInfija.Peek().Dato.Equals("-")
+                            || PilaExpresionInfija.Peek().Dato.Equals("*")
+                            || PilaExpresionInfija.Peek().Dato.Equals("/")
+                            || PilaExpresionInfija.Peek().Dato.Equals("^"))
+                    {
+                        if (PilaSimbolos.EstaVacia() || PilaSimbolos.Peek().Dato.Equals(")") || prioridad[PilaExpresionInfija.Peek().Dato] >= prioridad[PilaSimbolos.Peek().Dato])
+                            PilaSimbolos.Push(PilaExpresionInfija.Pop().Dato);
+                        else if (prioridad[PilaExpresionInfija.Peek().Dato] < prioridad[PilaSimbolos.Peek().Dato])
+                        {
+                            PilaExpresionPrefija.Push(PilaSimbolos.Pop().Dato);
+                            PilaSimbolos.Push(PilaExpresionInfija.Pop().Dato);
+                        }
+
+                        cantidadOperadores++;
+                    }
+                    else if (PilaExpresionInfija.Peek().Dato.Equals("("))
+                    {
+                        while (!PilaSimbolos.tope.Dato.Equals(")") && PilaSimbolos.tope != null)
+                        {
+                            PilaExpresionPrefija.Push(PilaSimbolos.Pop().Dato);
+                        }
+
+                        var rest = PilaSimbolos.Pop();
+                        PilaExpresionInfija.Pop();
+                    }
+                    else
+                    {
+                        throw new Exception();
                     }
 
-                    PilaSimbolos.Pop();
-                    PilaExpresionInfija.Pop();
-                }
-                else
-                {
-                    MessageBox.Show("Solo se permiten letras y signos", "Error");
-                    return;
-                }
+                    MostrarProcesoDeConversion();
+                } while (!PilaExpresionInfija.EstaVacia());
 
+                if (cantidadVariables - 1 != cantidadOperadores)
+                    throw new Exception();
 
-                simbolosTemporal = "";
-                expresionPrefijaTemporal = "";
-
-                Nodo<string> temp2 = PilaSimbolos.tope;
-
-                while (temp2 != null)
-                {
-                    simbolosTemporal += temp2.Dato;
-                    temp2 = temp2.Siguiente;
-                }
-
-                temp2 = PilaExpresionPrefija.tope;
-
-                while (temp2 != null)
-                {
-                    expresionPrefijaTemporal += temp2.Dato;
-                    temp2 = temp2.Siguiente;
-                }
-                dataGridView1.Rows.Add(simbolosTemporal);
-                dataGridView2.Rows.Add(expresionPrefijaTemporal);
-            } while (!PilaExpresionInfija.EstaVacia());
-
-            Nodo<string> temp3 = PilaSimbolos.tope;
-
-            while (temp3 != null)
+                MostrarResultadosDeConversion();
+            }
+            catch 
             {
-                PilaExpresionPrefija.Push(temp3.Dato);
-                temp3 = temp3.Siguiente;
+                dataGridView1.Rows.Clear();
+                dataGridView2.Rows.Clear();
+                dataGridView3.Rows.Clear();
+                variables.Clear();
+                valoresParaLasVariables.Clear();
+                MessageBox.Show("Ingrese una expresión infija valida", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        public void MostrarProcesoDeConversion()
+        {
+            simbolosTemporal = "";
+            expresionPrefijaTemporal = "";
+
+            Nodo<string> temp = PilaSimbolos.tope;
+
+            while (temp != null)
+            {
+                simbolosTemporal += temp.Dato;
+                temp = temp.Siguiente;
             }
 
-            temp3 = PilaExpresionPrefija.tope;
+            temp = PilaExpresionPrefija.tope;
+
+            while (temp != null)
+            {
+                expresionPrefijaTemporal += temp.Dato;
+                temp = temp.Siguiente;
+            }
+            dataGridView1.Rows.Add(simbolosTemporal);
+            dataGridView2.Rows.Add(expresionPrefijaTemporal);
+        }
+
+        public void MostrarResultadosDeConversion()
+        {
+            Nodo<string> temp = PilaSimbolos.tope;
+
+            while (temp != null)
+            {
+                PilaExpresionPrefija.Push(temp.Dato);
+                temp = temp.Siguiente;
+            }
+
+            temp = PilaExpresionPrefija.tope;
 
             expresionPrefija = "";
 
-            while (temp3 != null)
+            while (temp != null)
             {
-                expresionPrefija += temp3.Dato;
-                temp3 = temp3.Siguiente;
+                expresionPrefija += temp.Dato;
+                temp = temp.Siguiente;
             }
             label2.Text += expresionPrefija;
+
+            dataGridView2.Rows.Add(expresionPrefija);
         }
 
         public double CalcularExpresionPrefija()
         {
-            PilaDinamica<double> pila = new PilaDinamica<double>();
-
-            for (int i = expresionPrefija.Length - 1; i >= 0; i--)
+            try
             {
-                char caracter = expresionPrefija[i];
+                PilaDinamica<double> pila = new PilaDinamica<double>();
 
-                if (Char.IsLetter(caracter))
+                for (int i = expresionPrefija.Length - 1; i >= 0; i--)
                 {
-                    double valor = valoresParaLasVariables[variables.IndexOf(caracter)];
-                    pila.Push(valor);
-                }
-                else if (Char.IsDigit(caracter))
-                {
-                    pila.Push(Convert.ToInt32(caracter.ToString()));
-                }
-                else if (esOperador(caracter))
-                {
-                    double operando1 = pila.Pop().Dato;
-                    double operando2 = pila.Pop().Dato;
+                    char caracter = expresionPrefija[i];
 
-                    switch (caracter)
+                    if (Char.IsLetter(caracter))
                     {
-                        case '+':
-                            pila.Push(operando1 + operando2);
-                            break;
-                        case '-':
-                            pila.Push(operando1 - operando2);
-                            break;
-                        case '*':
-                            pila.Push(operando1 * operando2);
-                            break;
-                        case '/':
-                            pila.Push(operando1 / operando2);
-                            break;
-                        case '^':
-                            pila.Push(Math.Pow(operando1, operando2));
-                            break;
-                        default:
-                            throw new ArgumentException("Operador no válido: " + caracter);
+                        double valor = valoresParaLasVariables[variables.IndexOf(caracter)];
+                        pila.Push(valor);
                     }
-                    resultadoTemporal = $"{operando1} {caracter} {operando2}";
-                    dataGridView3.Rows.Add(resultadoTemporal);
-                }
-                else
-                {
-                    throw new ArgumentException("Caracter no reconocido: " + caracter);
-                }
-            }
+                    else if (Char.IsDigit(caracter))
+                    {
+                        pila.Push(Convert.ToInt32(caracter.ToString()));
+                    }
+                    else if (esOperador(caracter))
+                    {
+                        double operando1 = pila.Pop().Dato;
+                        double operando2 = pila.Pop().Dato;
 
-            return pila.Pop().Dato;
+                        switch (caracter)
+                        {
+                            case '+':
+                                pila.Push(operando1 + operando2);
+                                break;
+                            case '-':
+                                pila.Push(operando1 - operando2);
+                                break;
+                            case '*':
+                                pila.Push(operando1 * operando2);
+                                break;
+                            case '/':
+                                pila.Push(operando1 / operando2);
+                                break;
+                            case '^':
+                                pila.Push(Math.Pow(operando1, operando2));
+                                break;
+                            default:
+                                throw new ArgumentException("Operador no válido: " + caracter);
+                        }
+                        resultadoTemporal = $"{operando1} {caracter} {operando2}";
+                        dataGridView3.Rows.Add(resultadoTemporal);
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Caracter no reconocido: " + caracter);
+                    }
+                }
+
+                dataGridView3.Rows.Add(pila.Peek().Dato);
+
+                return pila.Pop().Dato;
+            }
+            catch
+            {
+                MessageBox.Show("Ingrese una expresión infija valida", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return default;
+            }
         }
         public bool esOperador(char c)
         {
@@ -218,7 +260,7 @@ namespace P322310540TM
         private void button2_Click(object sender, EventArgs e)
         {
             AsignarValores();
-            if(valoresParaLasVariables.Count == variables.Count)
+            if (valoresParaLasVariables.Count == variables.Count)
                 label3.Text = $"Expresión evaluada: {CalcularExpresionPrefija()}";
         }
 
@@ -228,13 +270,17 @@ namespace P322310540TM
             dataGridView3.Rows.Clear();
             foreach (var letra in variables)
             {
-                var valor = Microsoft.VisualBasic.Interaction
-                    .InputBox("Valor para la variable " + letra.ToString(), "Peticion de valor", "");
-                
-                if(valor.Length > 0)
-                    if(Char.IsNumber(Convert.ToChar(valor)))
+                var valor = Interaction.InputBox("Valor para la variable " + letra.ToString(), "Peticion de valor", "");
+
+                if (valor.Length > 0)
+                    if (Char.IsNumber(Convert.ToChar(valor)))
                         valoresParaLasVariables.Add(Convert.ToDouble(valor));
             }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

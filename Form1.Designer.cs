@@ -39,6 +39,7 @@
             button2 = new Button();
             label2 = new Label();
             label3 = new Label();
+            button3 = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dataGridView2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dataGridView3).BeginInit();
@@ -47,8 +48,12 @@
             // dataGridView1
             // 
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridView1.BackgroundColor = Color.FromArgb(31, 95, 97);
+            dataGridView1.BorderStyle = BorderStyle.None;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView1.Columns.AddRange(new DataGridViewColumn[] { Column1 });
+            dataGridView1.Enabled = false;
+            dataGridView1.GridColor = Color.FromArgb(31, 95, 97);
             dataGridView1.Location = new Point(12, 103);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.RowTemplate.Height = 25;
@@ -63,8 +68,12 @@
             // dataGridView2
             // 
             dataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridView2.BackgroundColor = Color.FromArgb(31, 95, 97);
+            dataGridView2.BorderStyle = BorderStyle.None;
             dataGridView2.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView2.Columns.AddRange(new DataGridViewColumn[] { Column2 });
+            dataGridView2.Enabled = false;
+            dataGridView2.GridColor = Color.FromArgb(31, 95, 97);
             dataGridView2.Location = new Point(309, 103);
             dataGridView2.Name = "dataGridView2";
             dataGridView2.Size = new Size(267, 359);
@@ -78,8 +87,12 @@
             // dataGridView3
             // 
             dataGridView3.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridView3.BackgroundColor = Color.FromArgb(31, 95, 97);
+            dataGridView3.BorderStyle = BorderStyle.None;
             dataGridView3.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView3.Columns.AddRange(new DataGridViewColumn[] { Column3 });
+            dataGridView3.Enabled = false;
+            dataGridView3.GridColor = Color.FromArgb(31, 95, 97);
             dataGridView3.Location = new Point(605, 103);
             dataGridView3.Name = "dataGridView3";
             dataGridView3.Size = new Size(267, 359);
@@ -92,35 +105,45 @@
             // 
             // textBox1
             // 
-            textBox1.Location = new Point(12, 12);
-            textBox1.Multiline = true;
+            textBox1.BackColor = Color.FromArgb(31, 95, 97);
+            textBox1.BorderStyle = BorderStyle.None;
+            textBox1.ForeColor = Color.FromArgb(48, 38, 28);
+            textBox1.Location = new Point(12, 27);
             textBox1.Name = "textBox1";
-            textBox1.Size = new Size(267, 60);
+            textBox1.Size = new Size(267, 26);
             textBox1.TabIndex = 3;
             // 
             // button1
             // 
+            button1.BackColor = Color.FromArgb(31, 95, 97);
+            button1.FlatStyle = FlatStyle.Flat;
+            button1.ForeColor = Color.FromArgb(48, 38, 28);
             button1.Location = new Point(309, 12);
             button1.Name = "button1";
             button1.Size = new Size(267, 60);
             button1.TabIndex = 4;
             button1.Text = "Convertir";
-            button1.UseVisualStyleBackColor = true;
+            button1.UseVisualStyleBackColor = false;
             button1.Click += button1_Click;
             // 
             // button2
             // 
+            button2.BackColor = Color.FromArgb(31, 95, 97);
+            button2.Enabled = false;
+            button2.FlatStyle = FlatStyle.Flat;
+            button2.ForeColor = Color.FromArgb(48, 38, 28);
             button2.Location = new Point(605, 12);
             button2.Name = "button2";
             button2.Size = new Size(267, 60);
             button2.TabIndex = 5;
             button2.Text = "Evaluar";
-            button2.UseVisualStyleBackColor = true;
+            button2.UseVisualStyleBackColor = false;
             button2.Click += button2_Click;
             // 
             // label2
             // 
             label2.AutoSize = true;
+            label2.ForeColor = Color.FromArgb(48, 38, 28);
             label2.Location = new Point(12, 465);
             label2.Name = "label2";
             label2.Size = new Size(162, 25);
@@ -130,17 +153,33 @@
             // label3
             // 
             label3.AutoSize = true;
+            label3.ForeColor = Color.FromArgb(48, 38, 28);
             label3.Location = new Point(12, 508);
             label3.Name = "label3";
             label3.Size = new Size(184, 25);
             label3.TabIndex = 7;
             label3.Text = "Expresión evaluada: ";
             // 
+            // button3
+            // 
+            button3.BackColor = Color.FromArgb(95, 31, 97);
+            button3.FlatStyle = FlatStyle.Flat;
+            button3.ForeColor = Color.Black;
+            button3.Location = new Point(12, 536);
+            button3.Name = "button3";
+            button3.Size = new Size(860, 60);
+            button3.TabIndex = 8;
+            button3.Text = "Salir";
+            button3.UseVisualStyleBackColor = false;
+            button3.Click += button3_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(11F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(884, 542);
+            BackColor = Color.FromArgb(11, 129, 133);
+            ClientSize = new Size(884, 611);
+            Controls.Add(button3);
             Controls.Add(label3);
             Controls.Add(label2);
             Controls.Add(button2);
@@ -152,8 +191,11 @@
             Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             Margin = new Padding(5);
+            MaximizeBox = false;
+            MinimizeBox = false;
             Name = "Form1";
-            Text = "Form1";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Convertidor";
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ((System.ComponentModel.ISupportInitialize)dataGridView2).EndInit();
             ((System.ComponentModel.ISupportInitialize)dataGridView3).EndInit();
@@ -174,5 +216,6 @@
         private DataGridViewTextBoxColumn Column1;
         private DataGridViewTextBoxColumn Column2;
         private DataGridViewTextBoxColumn Column3;
+        private Button button3;
     }
 }
